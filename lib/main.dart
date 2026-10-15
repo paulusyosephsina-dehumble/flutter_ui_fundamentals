@@ -6,6 +6,31 @@ import 'value_notifier_demo.dart';
 import 'course_state_demo.dart';
 import 'package:provider/provider.dart';
 import 'course_state.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart';
+import 'models/course.dart';
+import 'services/course_service.dart';
+
+
+
+
+Future<List<Course>> loadCourses() async {
+  final String jsonString = await rootBundle.loadString(
+    'assets/data/student_data.json',
+  );
+
+  final Map<String, dynamic> data = jsonDecode(jsonString);
+
+  final List<dynamic> coursesJson = data['courses'];
+
+  return coursesJson
+      .map(
+        (item) => Course.fromJson(
+          item as Map<String, dynamic>,
+        ),
+      )
+      .toList();
+}
 
 void main() {
   runApp(
@@ -488,6 +513,21 @@ ElevatedButton(
 ),
 
 
+const SizedBox(height: 12),
+
+ElevatedButton.icon(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const CourseJsonDemo(),
+      ),
+    );
+  },
+  icon: const Icon(Icons.menu_book),
+  label: const Text('Buka Demo Tahap 8 - Model Course'),
+),
+
             const Divider(),
 
             const SizedBox(height: 12),
@@ -571,6 +611,68 @@ class DetailPage extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+
+class CourseJsonDemo extends StatelessWidget {
+  const CourseJsonDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tahap 8 - Model Course'),
+      ),
+      body: FutureBuilder<List<Course>>(
+        future: CourseService().loadCourses(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Gagal membaca data: ${snapshot.error}'),
+            );
+          }
+
+          final courses = snapshot.data ?? [];
+
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              const Card(
+                child: ListTile(
+                  title: Text(
+                    studentName,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('NIM: 2415051077'),
+                ),
+              ),
+              const SizedBox(height: 8),
+              ...courses.map(
+                (course) => Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.menu_book),
+                    title: Text(course.title),
+                    subtitle: Text(
+                      'Kode: ${course.code}\n'
+                      'SKS: ${course.credits}\n'
+                      'Status: ${course.status}',
+                    ),
+                    isThreeLine: true,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
