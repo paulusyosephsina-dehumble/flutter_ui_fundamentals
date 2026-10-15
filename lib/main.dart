@@ -10,6 +10,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'models/course.dart';
 import 'services/course_service.dart';
+import 'repositories/course_repository.dart';
 
 
 
@@ -35,12 +36,13 @@ Future<List<Course>> loadCourses() async {
 void main() {
   runApp(
     ChangeNotifierProvider<CourseState>(
-      create: (_) => CourseState(),
+      create: (_) => CourseState(
+        CourseRepository(CourseService()),
+      ),
       child: const MyApp(),
     ),
   );
 }
-
 
 const String studentName = 'Paulus Yoseph Sina';
 const String studentNim = '2415051077';
@@ -617,31 +619,45 @@ class DetailPage extends StatelessWidget {
 }
 
 
-class CourseJsonDemo extends StatelessWidget {
+
+class CourseJsonDemo extends StatefulWidget {
   const CourseJsonDemo({super.key});
+
+  @override
+  State<CourseJsonDemo> createState() => _CourseJsonDemoState();
+}
+
+class _CourseJsonDemoState extends State<CourseJsonDemo> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<CourseState>().fetchCourses();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tahap 8 - Model Course'),
+        title: const Text('Tahap 10 - Repository Pattern'),
       ),
-      body: FutureBuilder<List<Course>>(
-        future: CourseService().loadCourses(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Consumer<CourseState>(
+        builder: (context, state, child) {
+          if (state.isLoading && state.courses.isEmpty) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
 
-          if (snapshot.hasError) {
+          if (state.errorMessage != null &&
+              state.courses.isEmpty) {
             return Center(
-              child: Text('Gagal membaca data: ${snapshot.error}'),
+              child: Text(state.errorMessage!),
             );
           }
-
-          final courses = snapshot.data ?? [];
 
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -650,13 +666,15 @@ class CourseJsonDemo extends StatelessWidget {
                 child: ListTile(
                   title: Text(
                     studentName,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   subtitle: Text('NIM: 2415051077'),
                 ),
               ),
               const SizedBox(height: 8),
-              ...courses.map(
+              ...state.courses.map(
                 (course) => Card(
                   child: ListTile(
                     leading: const Icon(Icons.menu_book),
