@@ -4,10 +4,18 @@ import 'prop_drilling_demo.dart';
 import 'lifting_state_demo.dart';
 import 'value_notifier_demo.dart';
 import 'course_state_demo.dart';
+import 'package:provider/provider.dart';
+import 'course_state.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider<CourseState>(
+      create: (_) => CourseState(),
+      child: const MyApp(),
+    ),
+  );
 }
+
 
 const String studentName = 'Paulus Yoseph Sina';
 const String studentNim = '2415051077';
