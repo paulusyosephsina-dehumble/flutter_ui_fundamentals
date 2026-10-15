@@ -634,7 +634,7 @@ class _CourseJsonDemoState extends State<CourseJsonDemo> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      context.read<CourseState>().fetchCourses();
+      context.read<CourseState>().loadCourses();
     });
   }
 
@@ -642,7 +642,7 @@ class _CourseJsonDemoState extends State<CourseJsonDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tahap 10 - Repository Pattern'),
+        title: const Text('Tahap 11 - Provider Async State'),
       ),
       body: Consumer<CourseState>(
         builder: (context, state, child) {
@@ -652,10 +652,9 @@ class _CourseJsonDemoState extends State<CourseJsonDemo> {
             );
           }
 
-          if (state.errorMessage != null &&
-              state.courses.isEmpty) {
+          if (state.error != null && state.courses.isEmpty) {
             return Center(
-              child: Text(state.errorMessage!),
+              child: Text('Gagal memuat data: ${state.error}'),
             );
           }
 
