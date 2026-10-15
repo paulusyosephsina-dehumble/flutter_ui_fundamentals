@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'local_state_demo.dart';
 import 'prop_drilling_demo.dart';
-
+import 'lifting_state_demo.dart';
 
 void main() {
   runApp(const MyApp());
@@ -393,6 +393,36 @@ class _DebuggingPageState extends State<DebuggingPage> {
             ),
 
             const SizedBox(height: 30),
+
+            const SizedBox(height: 16),
+
+const Text(
+  'Praktikum State Management',
+  style: TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  ),
+),
+
+const SizedBox(height: 8),
+
+SizedBox(
+  width: double.infinity,
+  child: ElevatedButton.icon(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LiftingStateDemo(),
+        ),
+      );
+    },
+    icon: const Icon(Icons.sync_alt),
+    label: const Text('Buka Demo Tahap 3'),
+  ),
+),
+
+const SizedBox(height: 16),
 
             const Divider(),
 
