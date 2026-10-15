@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'local_state_demo.dart';
+import 'prop_drilling_demo.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -98,6 +100,64 @@ class _DebuggingPageState extends State<DebuggingPage> {
             ),
 
             const SizedBox(height: 20),
+
+            // =================================================
+            // NAVIGASI DEMO TAHAP 1 DAN TAHAP 2
+            // =================================================
+
+            const Text(
+              'Praktikum State Management',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            const Text(
+              'Pilih demo untuk menguji local state dan shared state.',
+            ),
+
+            const SizedBox(height: 12),
+
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LocalStateDemo(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.visibility),
+                      label: const Text('Buka Demo Tahap 1 - Local State'),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PropDrillingDemo(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.favorite),
+                      label: const Text('Buka Demo Tahap 2 - Prop Drilling'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
 
             const Text(
               'Debugging Challenge',
