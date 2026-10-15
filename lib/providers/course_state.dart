@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'models/course.dart';
-import 'repositories/course_repository.dart';
+import '../models/course.dart';
+import '../repositories/course_repository.dart';
 
 class CourseState extends ChangeNotifier {
   final CourseRepository repository;
@@ -13,17 +13,19 @@ class CourseState extends ChangeNotifier {
 
   final Set<String> favorites = <String>{};
 
-  bool isFavorite(String id) => favorites.contains(id);
+bool isFavorite(String code) {
+  return favorites.contains(code);
+}
 
-  void toggleFavorite(String id) {
-    if (favorites.contains(id)) {
-      favorites.remove(id);
-    } else {
-      favorites.add(id);
-    }
-    notifyListeners();
+void toggleFavorite(String code) {
+  if (favorites.contains(code)) {
+    favorites.remove(code);
+  } else {
+    favorites.add(code);
   }
 
+  notifyListeners();
+}
   int get favoriteCount => favorites.length;
 
   Future<void> loadCourses() async {

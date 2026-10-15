@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'local_state_demo.dart';
-import 'prop_drilling_demo.dart';
-import 'lifting_state_demo.dart';
-import 'value_notifier_demo.dart';
-import 'course_state_demo.dart';
+import 'screens/local_state_demo.dart';
+import 'screens/prop_drilling_demo.dart';
+import 'screens/lifting_state_demo.dart';
+import 'screens/value_notifier_demo.dart';
+import 'screens/course_state_demo.dart';
 import 'package:provider/provider.dart';
-import 'course_state.dart';
+import 'providers/course_state.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'models/course.dart';
 import 'services/course_service.dart';
 import 'repositories/course_repository.dart';
+import 'screens/favorites_page.dart';
 
 
 
@@ -514,8 +515,22 @@ ElevatedButton(
   child: const Text('Buka Demo Tahap 7'),
 ),
 
+ElevatedButton.icon(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const FavoritesPage(),
+      ),
+    );
+  },
+  icon: const Icon(Icons.favorite),
+  label: const Text('Buka Mata Kuliah Favorit'),
+),
+
 
 const SizedBox(height: 12),
+
 
 ElevatedButton.icon(
   onPressed: () {
