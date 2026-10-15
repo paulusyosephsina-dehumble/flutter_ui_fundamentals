@@ -475,6 +475,18 @@ SizedBox(
 
 const SizedBox(height: 16),
 
+ElevatedButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CourseStateDemo(),
+      ),
+    );
+  },
+  child: const Text('Buka Demo Tahap 7'),
+),
+
 
             const Divider(),
 

@@ -1,147 +1,141 @@
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'course_state.dart';
 
-class CourseStateDemo extends StatefulWidget {
+class CourseStateDemo extends StatelessWidget {
   const CourseStateDemo({super.key});
 
-  @override
-  State<CourseStateDemo> createState() => _CourseStateDemoState();
-}
-
-class _CourseStateDemoState extends State<CourseStateDemo> {
   static const String studentName = 'Paulus Yoseph Sina';
   static const String studentNim = '2415051077';
 
-  late final CourseState courseState;
-
-  final List<Map<String, String>> courses = const [
-    {'id': 'mobile', 'title': 'Pemrograman Mobile'},
-    {'id': 'network', 'title': 'Jaringan Komputer'},
-    {'id': 'image', 'title': 'Pengolahan Citra Digital'},
+  static const List<Map<String, String>> courses = [
+    {
+      'code': 'PTI101',
+      'name': 'Pemrograman Mobile',
+    },
+    {
+      'code': 'PTI102',
+      'name': 'Jaringan Komputer',
+    },
+    {
+      'code': 'PTI103',
+      'name': 'Pengolahan Citra Digital',
+    },
   ];
 
   @override
-  void initState() {
-    super.initState();
-    courseState = CourseState();
-  }
-
-  @override
-  void dispose() {
-    courseState.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // WATCH: mendengarkan perubahan state dan memicu rebuild.
+    final provider = context.watch<CourseState>();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tahap 5 - ChangeNotifier'),
-        backgroundColor: Colors.deepPurple,
-        foregroundColor: Colors.white,
+        title: const Text('Tahap 7 - Provider'),
       ),
-      body: SingleChildScrollView(
+      body: ListView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Card(
-              child: ListTile(
-                leading: const CircleAvatar(child: Icon(Icons.person)),
-                title: const Text(
-                  studentName,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+        children: [
+          const Text(
+            'Identitas Mahasiswa',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text('Nama: Paulus Yoseph Sina'),
+          const Text('NIM: 2415051077'),
+          const Divider(height: 28),
+
+          const Text(
+            'Demo context.watch(), context.read(), dan Consumer',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Nilai jumlah favorit dibaca menggunakan watch().
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Jumlah favorit: ${provider.favoriteCount}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-                subtitle: const Text('NIM: 2415051077'),
               ),
             ),
-            const SizedBox(height: 20),
-            const Text(
-              'ChangeNotifier dan notifyListeners()',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Tekan ikon hati untuk menambahkan atau menghapus mata kuliah '
-              'dari favorit. CourseState mengelola datanya, lalu '
-              'notifyListeners() memberi tahu widget yang mendengarkan.',
-            ),
-            const SizedBox(height: 16),
+          ),
 
-            // AnimatedBuilder mendengarkan CourseState tanpa Provider.
-            AnimatedBuilder(
-              animation: courseState,
-              builder: (context, child) {
-                return Card(
-                  color: Colors.deepPurple.shade50,
-                  child: ListTile(
-                    leading: const Icon(
-                      Icons.favorite,
-                      color: Colors.deepPurple,
-                    ),
-                    title: const Text(
-                      'Jumlah Favorit',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    trailing: Text(
-                      '${courseState.favoriteCount}',
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+          const SizedBox(height: 8),
+
+          // Consumer membatasi rebuild pada bagian jumlah favorit ini.
+          Consumer<CourseState>(
+            builder: (context, courseState, child) {
+              return Card(
+                color: Colors.blue.shade50,
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.refresh,
+                    color: Colors.blue,
                   ),
-                );
-              },
-            ),
-            const SizedBox(height: 12),
-            for (final course in courses)
-              AnimatedBuilder(
-                animation: courseState,
-                builder: (context, child) {
-                  final id = course['id']!;
-                  final title = course['title']!;
-                  final favorite = courseState.isFavorite(id);
+                  title: const Text('Area Consumer'),
+                  subtitle: Text(
+                    'Consumer memperbarui bagian ini. '
+                    'Total favorit: ${courseState.favoriteCount}',
+                  ),
+                ),
+              );
+            },
+          ),
 
-                  return Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.school),
-                      title: Text(title),
-                      trailing: IconButton(
-                        tooltip: favorite
-                            ? 'Hapus dari favorit'
-                            : 'Tambahkan ke favorit',
-                        onPressed: () => courseState.toggleFavorite(id),
-                        icon: Icon(
-                          favorite ? Icons.favorite : Icons.favorite_border,
-                          color: favorite ? Colors.red : Colors.grey,
-                        ),
-                      ),
-                      subtitle: Text(
-                        favorite ? 'Status: Favorit' : 'Status: Bukan favorit',
-                      ),
-                    ),
-                  );
-                },
-              ),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.deepPurple.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.deepPurple.shade100),
-              ),
-              child: const Text(
-                'Pengamatan: logika favorites berada di CourseState, bukan '
-                'di setiap widget. Setelah toggleFavorite mengubah data, '
-                'notifyListeners() membuat AnimatedBuilder membangun ulang '
-                'bagian UI yang mendengarkan CourseState.',
-              ),
+          const SizedBox(height: 12),
+          const Text(
+            'Daftar Mata Kuliah',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
+          ),
+
+          ...courses.map((course) {
+            final code = course['code']!;
+            final name = course['name']!;
+            final isFavorite = provider.isFavorite(code);
+
+            return Card(
+              child: ListTile(
+                title: Text(name),
+                subtitle: Text('Kode: $code'),
+                trailing: IconButton(
+                  // READ: menjalankan aksi tanpa listen pada tombol.
+                  onPressed: () {
+                    context.read<CourseState>().toggleFavorite(code);
+                  },
+                  icon: Icon(
+                    isFavorite
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: isFavorite ? Colors.red : Colors.grey,
+                  ),
+                  tooltip: isFavorite
+                      ? 'Hapus dari favorit'
+                      : 'Tambahkan ke favorit',
+                ),
+              ),
+            );
+          }),
+
+          const SizedBox(height: 16),
+          const Text(
+            'Pengamatan: tekan ikon hati. '
+            'Jumlah favorit dan status ikon akan diperbarui.',
+          ),
+        ],
       ),
     );
   }
