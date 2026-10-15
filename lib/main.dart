@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'local_state_demo.dart';
 import 'prop_drilling_demo.dart';
 import 'lifting_state_demo.dart';
+import 'value_notifier_demo.dart';
+import 'course_state_demo.dart';
 
 void main() {
   runApp(const MyApp());
@@ -423,6 +425,48 @@ SizedBox(
 ),
 
 const SizedBox(height: 16),
+
+const SizedBox(height: 8),
+
+SizedBox(
+  width: double.infinity,
+  child: ElevatedButton.icon(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ValueNotifierDemo(),
+        ),
+      );
+    },
+    icon: const Icon(Icons.exposure_plus_1),
+    label: const Text('Buka Demo Tahap 4'),
+  ),
+),
+
+const SizedBox(height: 16),
+
+
+const SizedBox(height: 8),
+
+SizedBox(
+  width: double.infinity,
+  child: ElevatedButton.icon(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const CourseStateDemo(),
+        ),
+      );
+    },
+    icon: const Icon(Icons.notifications_active),
+    label: const Text('Buka Demo Tahap 5'),
+  ),
+),
+
+const SizedBox(height: 16),
+
 
             const Divider(),
 
