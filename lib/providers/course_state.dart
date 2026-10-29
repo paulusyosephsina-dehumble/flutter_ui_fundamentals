@@ -33,7 +33,7 @@ class CourseState extends ChangeNotifier {
 
   int get favoriteCount => favorites.length;
 
-  // GET: Memuat daftar course
+  // GET: Memuat daftar course dari API
   Future<void> loadCourses() async {
     isLoading = true;
     error = null;
@@ -58,8 +58,13 @@ class CourseState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await repository.createCourse(course);
-      await loadCourses();
+      // Kirim data ke API dan ambil responsnya.
+      final createdCourse = await repository.createCourse(course);
+
+      // Tambahkan hasil POST ke daftar lokal.
+      // Tidak memanggil loadCourses() agar hasil POST
+      // simulasi tidak langsung hilang.
+      courses.insert(0, createdCourse);
     } catch (e) {
       error = e.toString();
       rethrow;
@@ -79,7 +84,15 @@ class CourseState extends ChangeNotifier {
 
     try {
       await repository.updateCourse(id, course);
-      await loadCourses();
+
+      // Perbarui daftar lokal setelah PUT berhasil.
+      final index = courses.indexWhere(
+        (item) => item.code == course.code,
+      );
+
+      if (index != -1) {
+        courses[index] = course;
+      }
     } catch (e) {
       error = e.toString();
       rethrow;
@@ -98,14 +111,12 @@ class CourseState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Hapus course melalui REST API
+      // Hapus course melalui REST API.
       await repository.deleteCourse(id);
 
-      // Hapus course dari daftar favorit
+      // Hapus course dari daftar lokal dan favorit.
+      courses.removeWhere((course) => course.code == code);
       favorites.remove(code);
-
-      // Muat ulang daftar course
-      await loadCourses();
     } catch (e) {
       error = e.toString();
       rethrow;

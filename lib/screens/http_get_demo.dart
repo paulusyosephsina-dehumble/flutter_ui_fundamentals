@@ -1,8 +1,6 @@
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import '../services/course_api_service.dart';
 
 const String apiUrl = 'https://jsonplaceholder.typicode.com/posts';
 
@@ -31,24 +29,25 @@ class _HttpGetDemoState extends State<HttpGetDemo> {
     });
 
     try {
-      final response = await http.get(Uri.parse(apiUrl));
-      statusCode = response.statusCode;
+      final service = CourseApiService(
+        'https://jsonplaceholder.typicode.com',
+      );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> posts =
-            jsonDecode(response.body) as List<dynamic>;
+      final courses = await service.getCourses();
 
-        setState(() {
-          itemCount = posts.length;
-          isLoading = false;
-        });
+      if (!mounted) return;
 
-        debugPrint('HTTP status: ${response.statusCode}');
-        debugPrint('Jumlah data: ${posts.length}');
-      } else {
-        throw Exception('HTTP ${response.statusCode}');
-      }
+      setState(() {
+        itemCount = courses.length;
+        statusCode = 200;
+        isLoading = false;
+      });
+
+      debugPrint('HTTP status: $statusCode');
+      debugPrint('Jumlah data: ${courses.length}');
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         errorMessage = e.toString();
         isLoading = false;
@@ -61,7 +60,9 @@ class _HttpGetDemoState extends State<HttpGetDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tahap 2 - HTTP GET')),
+      appBar: AppBar(
+        title: const Text('Tahap 2 - HTTP GET'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -72,9 +73,11 @@ class _HttpGetDemoState extends State<HttpGetDemo> {
                 leading: Icon(Icons.person),
                 title: Text(
                   studentName,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                subtitle: Text('NIM: 2415051077'),
+                subtitle: Text('NIM: $studentNim'),
               ),
             ),
             const SizedBox(height: 16),
@@ -95,7 +98,9 @@ class _HttpGetDemoState extends State<HttpGetDemo> {
             ),
             const SizedBox(height: 16),
             if (isLoading)
-              const Center(child: CircularProgressIndicator()),
+              const Center(
+                child: CircularProgressIndicator(),
+              ),
             if (statusCode != null)
               Text('Status HTTP: $statusCode'),
             if (itemCount != null)
@@ -109,7 +114,9 @@ class _HttpGetDemoState extends State<HttpGetDemo> {
             if (errorMessage != null)
               Text(
                 'Terjadi kesalahan: $errorMessage',
-                style: const TextStyle(color: Colors.red),
+                style: const TextStyle(
+                  color: Colors.red,
+                ),
               ),
           ],
         ),
