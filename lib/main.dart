@@ -16,6 +16,7 @@ import 'screens/course_explorer_page.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/supabase_config.dart';
+import 'screens/http_get_demo.dart';
 
 // ============================================================
 // KONFIGURASI API DAN IDENTITAS MAHASISWA
@@ -76,7 +77,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const CourseExplorerPage(),
+      home: const HttpGetDemo(),
     );
   }
 }

@@ -17,11 +17,19 @@ class CourseApiService implements CourseDataSource {
       Uri.parse('$baseUrl/posts'),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception(
-        'Gagal mengambil data API: ${response.statusCode}',
-      );
-    }
+    if (response.statusCode == 404) {
+  throw Exception(
+    'HTTP 404: Endpoint tidak ditemukan. '
+    'Periksa URL API lalu coba lagi.',
+  );
+}
+
+if (response.statusCode != 200) {
+  throw Exception(
+    'Gagal mengambil data API '
+    '(HTTP ${response.statusCode}). Coba lagi.',
+  );
+}
 
     final List<dynamic> data = jsonDecode(response.body);
 
