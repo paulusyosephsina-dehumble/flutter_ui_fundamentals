@@ -19,6 +19,7 @@ import 'services/course_service.dart';
 import 'repositories/course_repository.dart';
 import 'screens/favorites_page.dart';
 import 'screens/course_explorer_page.dart';
+import 'screens/http_get_demo.dart';
 
 Future<List<Course>> loadCourses() async {
   final String jsonString = await rootBundle.loadString(
@@ -58,7 +59,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,
       ),
-      home: const CourseExplorerPage(),
+      home: const HttpGetDemo(),
     );
   }
 }
