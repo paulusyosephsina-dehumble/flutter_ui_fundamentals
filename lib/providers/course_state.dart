@@ -33,7 +33,7 @@ class CourseState extends ChangeNotifier {
 
   int get favoriteCount => favorites.length;
 
-  // GET: Memuat daftar course dari API
+  // GET: Memuat daftar course
   Future<void> loadCourses() async {
     isLoading = true;
     error = null;
@@ -58,12 +58,9 @@ class CourseState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Kirim data ke API dan ambil responsnya.
       final createdCourse = await repository.createCourse(course);
 
-      // Tambahkan hasil POST ke daftar lokal.
-      // Tidak memanggil loadCourses() agar hasil POST
-      // simulasi tidak langsung hilang.
+      // Tambahkan data hasil INSERT ke daftar lokal.
       courses.insert(0, createdCourse);
     } catch (e) {
       error = e.toString();
@@ -83,15 +80,23 @@ class CourseState extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Perbarui data di Supabase melalui repository.
       await repository.updateCourse(id, course);
 
-      // Perbarui daftar lokal setelah PUT berhasil.
+      // Cari data lokal berdasarkan ID database.
       final index = courses.indexWhere(
-        (item) => item.code == course.code,
+        (item) => item.id == id,
       );
 
       if (index != -1) {
-        courses[index] = course;
+        // Pertahankan ID lama dan perbarui data lainnya.
+        courses[index] = Course(
+          id: id,
+          code: course.code,
+          title: course.title,
+          credits: course.credits,
+          status: course.status,
+        );
       }
     } catch (e) {
       error = e.toString();
@@ -111,7 +116,6 @@ class CourseState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Hapus course melalui REST API.
       await repository.deleteCourse(id);
 
       // Hapus course dari daftar lokal dan favorit.

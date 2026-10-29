@@ -36,12 +36,13 @@ Future<Course> createCourse(Course course) async {
   );
 }
 
-  @override
-  Future<void> updateCourse(int id, Course course) async {
-    throw UnimplementedError(
-      'Ubah mata kuliah belum diterapkan pada tahap ini.',
-    );
-  }
+@override
+Future<void> updateCourse(int id, Course course) async {
+  await supabase
+      .from('courses')
+      .update(course.toJson())
+      .eq('id', id);
+}
 
   @override
   Future<void> deleteCourse(int id) async {
