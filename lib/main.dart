@@ -14,6 +14,9 @@ import 'screens/course_state_demo.dart';
 import 'screens/favorites_page.dart';
 import 'screens/course_explorer_page.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'config/supabase_config.dart';
+
 // ============================================================
 // KONFIGURASI API DAN IDENTITAS MAHASISWA
 // ============================================================
@@ -27,7 +30,21 @@ const String studentNim = '2415051077';
 // MAIN - SERVICE -> REPOSITORY -> PROVIDER
 // ============================================================
 
-void main() {
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: SupabaseConfig.url,
+    publishableKey: SupabaseConfig.publishableKey,
+  );
+
+  final supabase = Supabase.instance.client;
+
+debugPrint(
+  'Supabase URL: ${supabase.rest.url}',
+);
+
   final CourseDataSource dataSource = CourseApiService(apiBaseUrl);
 
   final CourseRepository repository = CourseRepository(dataSource);
@@ -39,6 +56,7 @@ void main() {
     ),
   );
 }
+
 
 // ============================================================
 // APLIKASI UTAMA
