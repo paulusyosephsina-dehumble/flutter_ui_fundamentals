@@ -1,17 +1,42 @@
-# flutter_ui_fundamentals
 
-A new Flutter project.
+# Proyek Pemrograman Mobile
+
+**Developer:** Paulus Yoseph Sina
+**NIM:** 2415051077
+**Status:** Proyek awal perkuliahan
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Proyek ini merupakan aplikasi Flutter yang dikembangkan untuk memenuhi tugas mata kuliah Pemrograman Berbasis Mobile.
 
-A few resources to get you started if this is your first Flutter project:
-
+Dokumentasi resmi Flutter:
 - [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
 - [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Tahap 1 — Membaca REST Endpoint dan JSON
+
+### Informasi Endpoint
+
+- **Nama API:** JSONPlaceholder
+- **Resource:** Posts
+- **Endpoint:** https://jsonplaceholder.typicode.com/posts
+- **HTTP Method:** GET
+- **Status Code:** 200 OK
+- **Format respons:** JSON berupa daftar objek post
+- **Alat pengujian:** PowerShell
+
+### Struktur JSON
+
+Objek respons memiliki empat field utama:
+
+1. `userId`: ID pengguna pemilik post.
+2. `id`: ID post.
+3. `title`: Judul post.
+4. `body`: Isi post.
+
+### Catatan Pengujian
+
+Endpoint diuji menggunakan HTTP GET melalui PowerShell. Hasil pengujian menunjukkan status code 200 OK, yang menandakan bahwa permintaan berhasil diproses. Respons server berisi data dalam format JSON berupa daftar objek post dengan field `userId`, `id`, `title`, dan `body`.
+
+JSONPlaceholder digunakan sebagai API latihan. Operasi tulis pada layanan ini bersifat simulasi sehingga perubahan data tidak disimpan secara permanen. Oleh karena itu, layanan ini digunakan untuk mempelajari struktur respons REST API, bukan sebagai database permanen aplikasi Course Data Manager.
