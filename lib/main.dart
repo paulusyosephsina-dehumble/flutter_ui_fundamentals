@@ -5,21 +5,15 @@ import 'screens/prop_drilling_demo.dart';
 import 'screens/lifting_state_demo.dart';
 import 'screens/value_notifier_demo.dart';
 import 'screens/course_state_demo.dart';
-
 import 'package:provider/provider.dart';
-
 import 'providers/course_state.dart';
-
 import 'dart:convert';
-
 import 'package:flutter/services.dart';
-
 import 'models/course.dart';
-import 'services/course_service.dart';
 import 'repositories/course_repository.dart';
 import 'screens/favorites_page.dart';
+import 'services/course_api_service.dart';
 import 'screens/course_explorer_page.dart';
-import 'screens/http_get_demo.dart';
 
 Future<List<Course>> loadCourses() async {
   final String jsonString = await rootBundle.loadString(
@@ -37,10 +31,14 @@ Future<List<Course>> loadCourses() async {
 
 void main() {
   runApp(
-    ChangeNotifierProvider<CourseState>(
-      create: (_) => CourseState(CourseRepository(CourseService())),
-      child: const MyApp(),
+ChangeNotifierProvider<CourseState>(
+  create: (_) => CourseState(
+    CourseRepository(
+      CourseApiService('https://jsonplaceholder.typicode.com'),
     ),
+  ),
+  child: const MyApp(),
+)
   );
 }
 
@@ -59,7 +57,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,
       ),
-      home: const HttpGetDemo(),
+      home: const CourseExplorerPage(),
     );
   }
 }
