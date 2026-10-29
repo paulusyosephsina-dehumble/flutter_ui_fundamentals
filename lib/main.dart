@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'providers/course_state.dart';
 import 'repositories/course_repository.dart';
-import 'services/course_api_service.dart';
+import 'services/course_supabase_service.dart';
 import 'services/course_data_source.dart';
 
 import 'screens/local_state_demo.dart';
@@ -45,7 +45,7 @@ debugPrint(
   'Supabase URL: ${supabase.rest.url}',
 );
 
-  final CourseDataSource dataSource = CourseApiService(apiBaseUrl);
+ final CourseDataSource dataSource = CourseSupabaseService();
 
   final CourseRepository repository = CourseRepository(dataSource);
 
