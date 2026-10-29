@@ -6,7 +6,12 @@ import '../models/course.dart';
 import '../providers/course_state.dart';
 
 class CourseFormPage extends StatefulWidget {
-  const CourseFormPage({super.key});
+  final Course? course;
+
+  const CourseFormPage({
+    super.key,
+    this.course,
+  });
 
   @override
   State<CourseFormPage> createState() => _CourseFormPageState();
@@ -14,11 +19,28 @@ class CourseFormPage extends StatefulWidget {
 
 class _CourseFormPageState extends State<CourseFormPage> {
   final _formKey = GlobalKey<FormState>();
+
   final _codeController = TextEditingController();
   final _titleController = TextEditingController();
   final _creditsController = TextEditingController();
 
   String _status = 'planned';
+
+  bool get _isEditing => widget.course != null;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final course = widget.course;
+
+    if (course != null) {
+      _codeController.text = course.code;
+      _titleController.text = course.title;
+      _creditsController.text = course.credits.toString();
+      _status = course.status;
+    }
+  }
 
   @override
   void dispose() {
@@ -31,7 +53,10 @@ class _CourseFormPageState extends State<CourseFormPage> {
   Future<void> _saveCourse() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final state = context.read<CourseState>();
+
     final course = Course(
+      id: widget.course?.id,
       code: _codeController.text.trim(),
       title: _titleController.text.trim(),
       credits: int.parse(_creditsController.text.trim()),
@@ -39,13 +64,29 @@ class _CourseFormPageState extends State<CourseFormPage> {
     );
 
     try {
-      await context.read<CourseState>().createCourse(course);
+      if (_isEditing) {
+        final id = widget.course!.id;
+
+        if (id == null) {
+          throw Exception(
+            'ID course tidak tersedia sehingga data tidak dapat diperbarui.',
+          );
+        }
+
+        await state.updateCourse(id, course);
+      } else {
+        await state.createCourse(course);
+      }
 
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Permintaan tambah mata kuliah berhasil.'),
+        SnackBar(
+          content: Text(
+            _isEditing
+                ? 'Permintaan pembaruan mata kuliah berhasil.'
+                : 'Permintaan tambah mata kuliah berhasil.',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -56,7 +97,10 @@ class _CourseFormPageState extends State<CourseFormPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Gagal menambahkan mata kuliah: $e'),
+          content: Text(
+            'Gagal ${_isEditing ? 'memperbarui' : 'menambahkan'} '
+            'mata kuliah: $e',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -69,7 +113,11 @@ class _CourseFormPageState extends State<CourseFormPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tambah Mata Kuliah'),
+        title: Text(
+          _isEditing
+              ? 'Edit Mata Kuliah'
+              : 'Tambah Mata Kuliah',
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -80,11 +128,15 @@ class _CourseFormPageState extends State<CourseFormPage> {
             children: [
               TextFormField(
                 controller: _codeController,
-                decoration: const InputDecoration(
+                readOnly: _isEditing,
+                decoration: InputDecoration(
                   labelText: 'Kode Mata Kuliah',
                   hintText: 'Contoh: PTI104',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.code),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.code),
+                  helperText: _isEditing
+                      ? 'Kode tidak dapat diubah saat mengedit.'
+                      : null,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -174,11 +226,15 @@ class _CourseFormPageState extends State<CourseFormPage> {
                           strokeWidth: 2,
                         ),
                       )
-                    : const Icon(Icons.save),
+                    : Icon(
+                        _isEditing ? Icons.edit : Icons.save,
+                      ),
                 label: Text(
                   state.isSaving
                       ? 'Menyimpan...'
-                      : 'Simpan Mata Kuliah',
+                      : _isEditing
+                          ? 'Simpan Perubahan'
+                          : 'Simpan Mata Kuliah',
                 ),
               ),
             ],

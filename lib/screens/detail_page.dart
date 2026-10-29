@@ -1,6 +1,9 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/course_state.dart';
+import 'course_form_page.dart';
 
 class DetailPage extends StatelessWidget {
   final String code;
@@ -14,15 +17,42 @@ class DetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<CourseState>();
 
-    final course = state.courses.firstWhere(
-      (item) => item.code == code,
-    );
+    final matchingCourses =
+        state.courses.where((item) => item.code == code);
 
+    if (matchingCourses.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Detail Mata Kuliah'),
+        ),
+        body: const Center(
+          child: Text('Data mata kuliah tidak ditemukan.'),
+        ),
+      );
+    }
+
+    final course = matchingCourses.first;
     final isFavorite = state.isFavorite(course.code);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail Mata Kuliah'),
+        actions: [
+          IconButton(
+            tooltip: 'Edit Mata Kuliah',
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CourseFormPage(
+                    course: course,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

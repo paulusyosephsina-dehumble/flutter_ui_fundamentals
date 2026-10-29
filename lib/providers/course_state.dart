@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 
 import '../models/course.dart';
@@ -32,6 +31,7 @@ class CourseState extends ChangeNotifier {
 
   int get favoriteCount => favorites.length;
 
+  // GET: Memuat daftar course
   Future<void> loadCourses() async {
     isLoading = true;
     error = null;
@@ -47,7 +47,7 @@ class CourseState extends ChangeNotifier {
     }
   }
 
-  // POST: Membuat course baru melalui Repository
+  // POST: Membuat course baru
   Future<void> createCourse(Course course) async {
     if (isSaving) return;
 
@@ -57,9 +57,26 @@ class CourseState extends ChangeNotifier {
 
     try {
       await repository.createCourse(course);
+      await loadCourses();
+    } catch (e) {
+      error = e.toString();
+      rethrow;
+    } finally {
+      isSaving = false;
+      notifyListeners();
+    }
+  }
 
-      // Muat ulang daftar setelah POST berhasil.
-      // Daftar diganti dengan hasil GET, bukan ditambah manual.
+  // PUT: Memperbarui course
+  Future<void> updateCourse(int id, Course course) async {
+    if (isSaving) return;
+
+    isSaving = true;
+    error = null;
+    notifyListeners();
+
+    try {
+      await repository.updateCourse(id, course);
       await loadCourses();
     } catch (e) {
       error = e.toString();
