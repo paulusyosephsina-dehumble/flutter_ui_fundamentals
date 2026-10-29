@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+
 import 'screens/local_state_demo.dart';
 import 'screens/prop_drilling_demo.dart';
 import 'screens/lifting_state_demo.dart';
 import 'screens/value_notifier_demo.dart';
 import 'screens/course_state_demo.dart';
+
 import 'package:provider/provider.dart';
+
 import 'providers/course_state.dart';
+
 import 'dart:convert';
+
 import 'package:flutter/services.dart';
+
 import 'models/course.dart';
 import 'services/course_service.dart';
 import 'repositories/course_repository.dart';
 import 'screens/favorites_page.dart';
-
-
-
+import 'screens/course_explorer_page.dart';
 
 Future<List<Course>> loadCourses() async {
   final String jsonString = await rootBundle.loadString(
@@ -26,20 +30,14 @@ Future<List<Course>> loadCourses() async {
   final List<dynamic> coursesJson = data['courses'];
 
   return coursesJson
-      .map(
-        (item) => Course.fromJson(
-          item as Map<String, dynamic>,
-        ),
-      )
+      .map((item) => Course.fromJson(item as Map<String, dynamic>))
       .toList();
 }
 
 void main() {
   runApp(
     ChangeNotifierProvider<CourseState>(
-      create: (_) => CourseState(
-        CourseRepository(CourseService()),
-      ),
+      create: (_) => CourseState(CourseRepository(CourseService())),
       child: const MyApp(),
     ),
   );
@@ -55,14 +53,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Tahap 16 Debugging',
+      title: 'Course Explorer',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigo,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,
       ),
-      home: const DebuggingPage(),
+      home: const CourseExplorerPage(),
     );
   }
 }
@@ -93,9 +89,7 @@ class _DebuggingPageState extends State<DebuggingPage> {
 
     await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const DetailPage(),
-      ),
+      MaterialPageRoute(builder: (_) => const DetailPage()),
     );
 
     if (!mounted) return;
@@ -108,9 +102,7 @@ class _DebuggingPageState extends State<DebuggingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tahap 16 - Debugging'),
-      ),
+      appBar: AppBar(title: const Text('Tahap 16 - Debugging')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -122,18 +114,12 @@ class _DebuggingPageState extends State<DebuggingPage> {
 
             Card(
               child: ListTile(
-                leading: const CircleAvatar(
-                  child: Icon(Icons.person),
-                ),
+                leading: const CircleAvatar(child: Icon(Icons.person)),
                 title: const Text(
                   studentName,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                subtitle: const Text(
-                  'NIM: 2415051077',
-                ),
+                subtitle: const Text('NIM: 2415051077'),
               ),
             ),
 
@@ -142,13 +128,9 @@ class _DebuggingPageState extends State<DebuggingPage> {
             // =================================================
             // NAVIGASI DEMO TAHAP 1 DAN TAHAP 2
             // =================================================
-
             const Text(
               'Praktikum State Management',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 8),
@@ -199,10 +181,7 @@ class _DebuggingPageState extends State<DebuggingPage> {
 
             const Text(
               'Debugging Challenge',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 20),
@@ -210,13 +189,9 @@ class _DebuggingPageState extends State<DebuggingPage> {
             // =================================================
             // KASUS A
             // =================================================
-
             const Text(
               'Kasus A - RenderFlex Overflow',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 8),
@@ -256,13 +231,9 @@ class _DebuggingPageState extends State<DebuggingPage> {
             // =================================================
             // KASUS B
             // =================================================
-
             const Text(
               'Kasus B - ListView dan Column',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 8),
@@ -279,9 +250,7 @@ class _DebuggingPageState extends State<DebuggingPage> {
                     padding: EdgeInsets.all(8),
                     child: Text(
                       'ListView diperbaiki dengan Expanded',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
 
@@ -292,12 +261,8 @@ class _DebuggingPageState extends State<DebuggingPage> {
                       itemCount: 8,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          leading: const Icon(
-                            Icons.check_circle_outline,
-                          ),
-                          title: Text(
-                            'Item ${index + 1}',
-                          ),
+                          leading: const Icon(Icons.check_circle_outline),
+                          title: Text('Item ${index + 1}'),
                         );
                       },
                     ),
@@ -319,13 +284,9 @@ class _DebuggingPageState extends State<DebuggingPage> {
             // =================================================
             // KASUS C
             // =================================================
-
             const Text(
               'Kasus C - Keyboard Overflow',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 8),
@@ -361,9 +322,7 @@ class _DebuggingPageState extends State<DebuggingPage> {
 
                     const SizedBox(height: 12),
 
-                    const Text(
-                      'Coba tekan field komentar dan buka keyboard.',
-                    ),
+                    const Text('Coba tekan field komentar dan buka keyboard.'),
                   ],
                 ),
               ),
@@ -382,13 +341,9 @@ class _DebuggingPageState extends State<DebuggingPage> {
             // =================================================
             // KASUS D
             // =================================================
-
             const Text(
               'Kasus D - Navigasi Ganda',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 8),
@@ -408,13 +363,10 @@ class _DebuggingPageState extends State<DebuggingPage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed:
-                            isNavigating ? null : openDetail,
+                        onPressed: isNavigating ? null : openDetail,
                         icon: const Icon(Icons.open_in_new),
                         label: Text(
-                          isNavigating
-                              ? 'Membuka...'
-                              : 'Buka Detail',
+                          isNavigating ? 'Membuka...' : 'Buka Detail',
                         ),
                       ),
                     ),
@@ -434,116 +386,106 @@ class _DebuggingPageState extends State<DebuggingPage> {
 
             const SizedBox(height: 16),
 
-const Text(
-  'Praktikum State Management',
-  style: TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.bold,
-  ),
-),
+            const Text(
+              'Praktikum State Management',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
 
-const SizedBox(height: 8),
+            const SizedBox(height: 8),
 
-SizedBox(
-  width: double.infinity,
-  child: ElevatedButton.icon(
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LiftingStateDemo(),
-        ),
-      );
-    },
-    icon: const Icon(Icons.sync_alt),
-    label: const Text('Buka Demo Tahap 3'),
-  ),
-),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LiftingStateDemo(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.sync_alt),
+                label: const Text('Buka Demo Tahap 3'),
+              ),
+            ),
 
-const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-const SizedBox(height: 8),
+            const SizedBox(height: 8),
 
-SizedBox(
-  width: double.infinity,
-  child: ElevatedButton.icon(
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const ValueNotifierDemo(),
-        ),
-      );
-    },
-    icon: const Icon(Icons.exposure_plus_1),
-    label: const Text('Buka Demo Tahap 4'),
-  ),
-),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ValueNotifierDemo(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.exposure_plus_1),
+                label: const Text('Buka Demo Tahap 4'),
+              ),
+            ),
 
-const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
+            const SizedBox(height: 8),
 
-const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CourseStateDemo(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.notifications_active),
+                label: const Text('Buka Demo Tahap 5'),
+              ),
+            ),
 
-SizedBox(
-  width: double.infinity,
-  child: ElevatedButton.icon(
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const CourseStateDemo(),
-        ),
-      );
-    },
-    icon: const Icon(Icons.notifications_active),
-    label: const Text('Buka Demo Tahap 5'),
-  ),
-),
+            const SizedBox(height: 16),
 
-const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CourseStateDemo(),
+                  ),
+                );
+              },
+              child: const Text('Buka Demo Tahap 7'),
+            ),
 
-ElevatedButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const CourseStateDemo(),
-      ),
-    );
-  },
-  child: const Text('Buka Demo Tahap 7'),
-),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const FavoritesPage()),
+                );
+              },
+              icon: const Icon(Icons.favorite),
+              label: const Text('Buka Mata Kuliah Favorit'),
+            ),
 
-ElevatedButton.icon(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const FavoritesPage(),
-      ),
-    );
-  },
-  icon: const Icon(Icons.favorite),
-  label: const Text('Buka Mata Kuliah Favorit'),
-),
+            const SizedBox(height: 12),
 
-
-const SizedBox(height: 12),
-
-
-ElevatedButton.icon(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const CourseJsonDemo(),
-      ),
-    );
-  },
-  icon: const Icon(Icons.menu_book),
-  label: const Text('Buka Demo Tahap 8 - Model Course'),
-),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const CourseJsonDemo()),
+                );
+              },
+              icon: const Icon(Icons.menu_book),
+              label: const Text('Buka Demo Tahap 8 - Model Course'),
+            ),
 
             const Divider(),
 
@@ -551,23 +493,14 @@ ElevatedButton.icon(
 
             const Text(
               'Identitas Mahasiswa',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 8),
 
-            const Text(
-              'Paulus Yoseph Sina',
-              style: TextStyle(fontSize: 16),
-            ),
+            const Text('Paulus Yoseph Sina', style: TextStyle(fontSize: 16)),
 
-            const Text(
-              '2415051077',
-              style: TextStyle(fontSize: 16),
-            ),
+            const Text('2415051077', style: TextStyle(fontSize: 16)),
           ],
         ),
       ),
@@ -585,28 +518,20 @@ class DetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detail Page'),
-      ),
+      appBar: AppBar(title: const Text('Detail Page')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.check_circle,
-                size: 70,
-              ),
+              const Icon(Icons.check_circle, size: 70),
 
               const SizedBox(height: 16),
 
               const Text(
                 'Navigasi berhasil!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
 
               const SizedBox(height: 8),
@@ -633,8 +558,6 @@ class DetailPage extends StatelessWidget {
   }
 }
 
-
-
 class CourseJsonDemo extends StatefulWidget {
   const CourseJsonDemo({super.key});
 
@@ -656,21 +579,15 @@ class _CourseJsonDemoState extends State<CourseJsonDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tahap 11 - Provider Async State'),
-      ),
+      appBar: AppBar(title: const Text('Tahap 11 - Provider Async State')),
       body: Consumer<CourseState>(
         builder: (context, state, child) {
           if (state.isLoading && state.courses.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (state.error != null && state.courses.isEmpty) {
-            return Center(
-              child: Text('Gagal memuat data: ${state.error}'),
-            );
+            return Center(child: Text('Gagal memuat data: ${state.error}'));
           }
 
           return ListView(
@@ -680,9 +597,7 @@ class _CourseJsonDemoState extends State<CourseJsonDemo> {
                 child: ListTile(
                   title: Text(
                     studentName,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text('NIM: 2415051077'),
                 ),
