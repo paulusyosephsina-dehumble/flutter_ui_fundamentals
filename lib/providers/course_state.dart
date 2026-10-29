@@ -1,3 +1,4 @@
+
 import 'package:flutter/foundation.dart';
 
 import '../models/course.dart';
@@ -13,6 +14,7 @@ class CourseState extends ChangeNotifier {
   bool isSaving = false;
   String? error;
 
+  // Shared Favorites
   final Set<String> favorites = <String>{};
 
   bool isFavorite(String code) {
@@ -77,6 +79,32 @@ class CourseState extends ChangeNotifier {
 
     try {
       await repository.updateCourse(id, course);
+      await loadCourses();
+    } catch (e) {
+      error = e.toString();
+      rethrow;
+    } finally {
+      isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  // DELETE: Menghapus course berdasarkan ID
+  Future<void> deleteCourse(int id, String code) async {
+    if (isSaving) return;
+
+    isSaving = true;
+    error = null;
+    notifyListeners();
+
+    try {
+      // Hapus course melalui REST API
+      await repository.deleteCourse(id);
+
+      // Hapus course dari daftar favorit
+      favorites.remove(code);
+
+      // Muat ulang daftar course
       await loadCourses();
     } catch (e) {
       error = e.toString();

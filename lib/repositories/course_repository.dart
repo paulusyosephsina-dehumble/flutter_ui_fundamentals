@@ -17,8 +17,13 @@ class CourseRepository {
     return service.createCourse(course);
   }
 
-  // PUT: Memperbarui course
+  // PUT: Memperbarui course berdasarkan ID
   Future<void> updateCourse(int id, Course course) {
     return service.updateCourse(id, course);
+  }
+
+  // DELETE: Menghapus course berdasarkan ID
+  Future<void> deleteCourse(int id) {
+    return service.deleteCourse(id);
   }
 }
