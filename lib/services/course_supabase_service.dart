@@ -44,10 +44,13 @@ Future<void> updateCourse(int id, Course course) async {
       .eq('id', id);
 }
 
+ 
   @override
   Future<void> deleteCourse(int id) async {
-    throw UnimplementedError(
-      'Hapus mata kuliah belum diterapkan pada tahap ini.',
-    );
+    await supabase
+        .from('courses')
+        .delete()
+        .eq('id', id);
   }
+
 }
