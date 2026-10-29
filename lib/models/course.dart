@@ -27,7 +27,6 @@ class Course {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'code': code,
       'title': title,
       'credits': credits,
