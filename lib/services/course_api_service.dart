@@ -10,6 +10,7 @@ class CourseApiService {
 
   final String baseUrl;
 
+  // GET: Mengambil daftar course dari REST API
   Future<List<Course>> getCourses() async {
     final response = await http.get(
       Uri.parse('$baseUrl/posts'),
@@ -28,5 +29,27 @@ class CourseApiService {
         item as Map<String, dynamic>,
       );
     }).toList();
+  }
+
+  // POST: Membuat course baru melalui REST API
+  Future<Course> createCourse(Course course) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/posts'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(course.toJson()),
+    );
+
+    if (response.statusCode == 200 ||
+        response.statusCode == 201) {
+      return Course.fromJson(
+        jsonDecode(response.body) as Map<String, dynamic>,
+      );
+    }
+
+    throw Exception(
+      'Gagal membuat course: ${response.statusCode}',
+    );
   }
 }

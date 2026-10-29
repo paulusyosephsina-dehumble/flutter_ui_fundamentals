@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'course_form_page.dart';
 import '../providers/course_state.dart';
 import '../widgets/course_card.dart';
 import 'detail_page.dart';
@@ -48,9 +48,23 @@ class _CourseExplorerPageState extends State<CourseExplorerPage> {
         final isWideScreen = constraints.maxWidth >= 700;
 
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Course Explorer'),
-            actions: [
+
+appBar: AppBar(
+  title: const Text('Course Explorer'),
+  actions: [
+    IconButton(
+      tooltip: 'Tambah Mata Kuliah',
+      icon: const Icon(Icons.add),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const CourseFormPage(),
+          ),
+        );
+      },
+    ),
+
               Padding(
                 padding: const EdgeInsets.only(right: 16),
                 child: Center(
