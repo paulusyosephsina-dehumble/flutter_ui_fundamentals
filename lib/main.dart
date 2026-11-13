@@ -14,6 +14,11 @@ import 'screens/course_state_demo.dart';
 import 'screens/favorites_page.dart';
 import 'screens/course_explorer_page.dart';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'firebase_options.dart';
+import 'services/notification_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/supabase_config.dart';
 import 'app_keys.dart';
@@ -38,6 +43,13 @@ const String studentNim = '2415051077';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  if (!kIsWeb) {
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  }
 
   await Supabase.initialize(
     url: SupabaseConfig.url,

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/services.dart';
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../services/kos_service.dart';
+import '../services/notification_service.dart';
 import '../widgets/role_guard.dart';
 import 'login_page.dart';
 
@@ -19,11 +20,27 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> _kosList = [];
   bool _loadingKos = true;
 
+  String _permissionStatus = 'Memeriksa...';
+  String? _fcmToken;
+
   @override
   void initState() {
     super.initState();
     _profileFuture = ProfileService().getMyProfile();
     _loadKosData();
+    _initNotifications();
+  }
+
+  Future<void> _initNotifications() async {
+    final status = await NotificationService.instance.requestPermission();
+    final token = await NotificationService.instance.getToken();
+    if (mounted) {
+      setState(() {
+        _permissionStatus = status.name;
+        _fcmToken = token;
+      });
+    }
+    await NotificationService.instance.init();
   }
 
   Future<void> _loadKosData() async {
@@ -154,6 +171,53 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Dialog untuk melihat & menyalin FCM Token
+  void _showTokenDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('FCM Device Token (Praktik 9)'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Status Izin: $_permissionStatus',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text('Salin token ini untuk uji kirim di Firebase Console:'),
+              const SizedBox(height: 8),
+              SelectableText(
+                _fcmToken ?? 'Token belum tersedia. Periksa izin notifikasi browser.',
+                style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          if (_fcmToken != null)
+            TextButton.icon(
+              icon: const Icon(Icons.copy),
+              label: const Text('Salin Token'),
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: _fcmToken!));
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('FCM Token disalin ke clipboard!')),
+                );
+              },
+            ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final myUid = AuthService.instance.currentUser?.id;
@@ -178,6 +242,11 @@ class _HomePageState extends State<HomePage> {
           appBar: AppBar(
             title: Text('KosFinder (${p.role.toUpperCase()})'),
             actions: [
+              IconButton(
+                tooltip: 'FCM Token & Notifikasi',
+                icon: const Icon(Icons.notifications_active),
+                onPressed: _showTokenDialog,
+              ),
               IconButton(
                 tooltip: 'Refresh Data',
                 icon: const Icon(Icons.refresh),
@@ -208,9 +277,31 @@ class _HomePageState extends State<HomePage> {
                   subtitle: Text('${p.email} • Role: ${p.role}'),
                 ),
               ),
+              const SizedBox(height: 12),
+
+              // 2. Banner Push Notification (Praktik 8 & 9)
+              Card(
+                color: Colors.indigo.shade50,
+                child: ListTile(
+                  leading: const Icon(Icons.notifications, color: Colors.indigo),
+                  title: const Text(
+                    'Push Notification (FCM)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    'Status Permission: $_permissionStatus\n'
+                    'Token: ${_fcmToken != null ? "${_fcmToken!.substring(0, 15)}... (Siap digunakan)" : "Sedang mengambil..."}',
+                  ),
+                  isThreeLine: true,
+                  trailing: OutlinedButton(
+                    onPressed: _showTokenDialog,
+                    child: const Text('Lihat Token'),
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
 
-              // 2. Judul Daftar Kos
+              // 3. Judul Daftar Kos
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -223,7 +314,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 8),
 
-              // 3. Daftar Kos
+              // 4. Daftar Kos
               if (_loadingKos)
                 const Center(
                   child: Padding(
