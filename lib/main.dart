@@ -16,6 +16,7 @@ import 'screens/course_explorer_page.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/supabase_config.dart';
+import 'pages/login_page.dart';
 
 
 // ============================================================
@@ -77,7 +78,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const CourseExplorerPage(),
+      home: const LoginPage(),
     );
   }
 }
