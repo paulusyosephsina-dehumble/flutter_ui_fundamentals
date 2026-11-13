@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
+import '../widgets/role_guard.dart';
 import 'login_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -30,72 +31,120 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('KosFinder'),
-        actions: [
-          IconButton(
-            tooltip: 'Logout',
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
+    return FutureBuilder<UserProfile?>(
+      future: _profileFuture,
+      builder: (context, snap) {
+        if (snap.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final p = snap.data;
+        if (snap.hasError || p == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('KosFinder')),
+            body: const Center(child: Text('Gagal memuat profil')),
+          );
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('KosFinder (${p.role.toUpperCase()})'),
+            actions: [
+              IconButton(
+                tooltip: 'Logout',
+                icon: const Icon(Icons.logout),
+                onPressed: _logout,
+              ),
+            ],
           ),
-        ],
-      ),
-      body: FutureBuilder<UserProfile?>(
-        future: _profileFuture,
-        builder: (context, snap) {
-          if (snap.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snap.hasError || snap.data == null) {
-            return const Center(child: Text('Gagal memuat profil'));
-          }
-          final p = snap.data!;
-          return ListView(
+          body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              // Kartu Profil Pengguna
               Card(
+                elevation: 2,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: Column(
                     children: [
                       ListTile(
-                        leading: const CircleAvatar(child: Icon(Icons.person)),
-                        title: const Text('Nama Pengguna'),
-                        subtitle: Text(p.name.isEmpty ? '-' : p.name,
-                            style: const TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                      const Divider(),
-                      ListTile(
-                        leading: const CircleAvatar(child: Icon(Icons.email)),
-                        title: const Text('Email'),
-                        subtitle: Text(p.email),
-                      ),
-                      const Divider(),
-                      ListTile(
-                        leading: const CircleAvatar(child: Icon(Icons.badge)),
-                        title: const Text('Role (Hak Akses)'),
-                        subtitle: Chip(
-                          label: Text(
-                            p.role.toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          backgroundColor: p.isOwner
-                              ? Colors.orange
-                              : (p.isAdmin ? Colors.red : Colors.indigo),
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.indigo.shade100,
+                          child: const Icon(Icons.person, color: Colors.indigo),
                         ),
+                        title: Text(
+                          p.name.isEmpty ? p.email : p.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        subtitle: Text('${p.email} • Role: ${p.role}'),
                       ),
                     ],
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              const Text(
+                'Menu Aplikasi',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+
+              // Menu 1: Semua role bisa lihat
+              const Card(
+                child: ListTile(
+                  leading: Icon(Icons.list_alt, color: Colors.blue),
+                  title: Text('Daftar Kos'),
+                  subtitle: Text('Jelajahi kos yang tersedia'),
+                  trailing: Icon(Icons.chevron_right),
+                ),
+              ),
+
+              // Menu 2: Hanya untuk Pemilik Kos (Owner) atau Admin
+              if (p.isOwner || p.isAdmin)
+                const Card(
+                  child: ListTile(
+                    leading: Icon(Icons.home_work, color: Colors.orange),
+                    title: Text('My Kos (Kos Saya)'),
+                    subtitle: Text('Kelola kos milik Anda'),
+                    trailing: Icon(Icons.chevron_right),
+                  ),
+                ),
+
+              // Menu 3: Khusus Admin
+              if (p.isAdmin)
+                const Card(
+                  child: ListTile(
+                    leading: Icon(Icons.admin_panel_settings, color: Colors.red),
+                    title: Text('Kelola Data (Admin)'),
+                    subtitle: Text('Akses manajemen data penuh'),
+                    trailing: Icon(Icons.chevron_right),
+                  ),
+                ),
             ],
-          );
-        },
-      ),
+          ),
+
+          // Tombol melayang "Tambah Kos": HANYA muncul untuk role OWNER dan ADMIN
+          floatingActionButton: RoleGuard(
+            role: p.role,
+            allowed: const ['owner', 'admin'],
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Halaman Tambah Kos (Akses diizinkan untuk Owner)'),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.add_home),
+              label: const Text('Tambah Kos'),
+            ),
+          ),
+        );
+      },
     );
   }
 }
